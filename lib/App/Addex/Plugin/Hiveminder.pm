@@ -23,8 +23,8 @@ sub import {
 
     return @emails if grep { $_->label eq $arg{todo_label} } @emails;
 
-    my $todo_label = $self->field('todos_to');
-    my ($email) = grep { $_->label eq $todo_label } @emails;
+    my $todos_to = $self->field('todos_to');
+    my ($email) = $todos_to ? (grep { $_->label eq $todos_to } @emails) : ();
     $email ||= $emails[0];
     
     push @emails, App::Addex::Entry::EmailAddress->new({
