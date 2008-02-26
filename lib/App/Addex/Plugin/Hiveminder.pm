@@ -49,9 +49,9 @@ plugin configuration.
 
 To specify that an entry's task assignment address should be built on an
 address other than its default address, specify the label of the address to use
-in the C<todos_to> field.  Alternately, if the C<todos_to> begins and ends with
-a slash, it will be treated as a regex and matched against the entry's
-addresses.
+in that entry's C<todos_to> field.  Alternately, if the C<todos_to> begins and
+ends with a slash, it will be treated as a regex and matched against the
+entry's addresses.
 
 So, by way of example, if an address has these addresses:
 
@@ -64,14 +64,23 @@ were C<other>, the todo address would be C<bravo@example.com.secret.with.hm>.
 If C<todos_to> were C</charlie/>, it would be
 c<charlie@example.com.secret.with.hm>.
 
-If the entry had an address with the label "todo," the plugin would not create
-a new address.
+If the entry had an address with the label "todo," no address will be inserted
+into the returned list.  If the entry had an address with the label "todo-via"
+it will be used to form the todo address, and will be suppressed from output.
+This is useful if your contact uses a specific address only for his
+Hiveminder account, as the recipient of a C<with.hm> request cannot accept the
+request to a different address.
 
 =cut
 
+sub _form_addr {
+  my ($mixin, $addr, $secret) = @_;
+  return "$addr.$secret.with.hm";
+}
+
 sub import {
-  my ($self, %arg) = @_;
-  die "no 'secret' config value for $self" unless %arg and $arg{secret};
+  my ($mixin, %arg) = @_;
+  die "no 'secret' config value for $mixin" unless %arg and $arg{secret};
   $arg{todo_label} ||= 'todo';
 
   require App::Addex::Entry;
@@ -84,7 +93,20 @@ sub import {
 
     return @emails if grep { $_->label eq $arg{todo_label} } @emails;
 
+    my $todo_via = "$arg{todo_label}-via";
+    if (my @indices = grep { $_->label eq $todo_via } @emails) {
+      for (@indices) {
+        my $email = $emails[$_];
+        splice @emails, $_, 1, App::Addex::Entry::EmailAddress->new({
+          address => $mixin->__form_addr($email->address, $arg{secret}),
+          label   => $arg{todo_label},
+          sends   => 0,
+        });
+      }
+    }
+
     my $email = $emails[0];
+
     # XXX: Totally lifted from AddressBook::Apple.  Put it somewhere more
     # sharey. -- rjbs, 2008-02-17
     CHECK_DEFAULT: {
@@ -109,7 +131,7 @@ sub import {
     }
 
     push @emails, App::Addex::Entry::EmailAddress->new({
-      address => $emails[0]->address . ".$arg{secret}.with.hm",
+      address => $mixin->__form_addr($emails[0]->address, $arg{secret}),
       label   => $arg{todo_label},
       sends   => 0,
     });
