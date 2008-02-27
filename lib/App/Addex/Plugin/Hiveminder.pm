@@ -30,7 +30,8 @@ email address that will send to the C<with.hm> assignment address.
 
 =head1 CONFIGURATION
 
-First, you have to add the plugin to your Addex configuration file:
+First, you have to add the plugin to your Addex configuration file's top
+section:
 
   plugin = App::Addex::Plugin::Hiveminder
 
