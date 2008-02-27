@@ -98,11 +98,13 @@ sub import {
       for (@indices) {
         my $email = $emails[$_];
         splice @emails, $_, 1, App::Addex::Entry::EmailAddress->new({
-          address => $mixin->__form_addr($email->address, $arg{secret}),
+          address => $mixin->_form_addr($email->address, $arg{secret}),
           label   => $arg{todo_label},
           sends   => 0,
         });
       }
+
+      return @emails;
     }
 
     my $email = $emails[0];
@@ -131,7 +133,7 @@ sub import {
     }
 
     push @emails, App::Addex::Entry::EmailAddress->new({
-      address => $mixin->__form_addr($emails[0]->address, $arg{secret}),
+      address => $mixin->_form_addr($emails[0]->address, $arg{secret}),
       label   => $arg{todo_label},
       sends   => 0,
     });
