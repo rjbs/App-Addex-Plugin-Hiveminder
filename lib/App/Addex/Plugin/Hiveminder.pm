@@ -94,7 +94,7 @@ sub import {
     return @emails if grep { $_->label eq $arg{todo_label} } @emails;
 
     my $todo_via = "$arg{todo_label}-via";
-    if (my @indices = grep { $_->label eq $todo_via } @emails) {
+    if (my @indices = grep { $emails[$_]->label eq $todo_via } 0..$#emails) {
       for (@indices) {
         my $email = $emails[$_];
         splice @emails, $_, 1, App::Addex::Entry::EmailAddress->new({
