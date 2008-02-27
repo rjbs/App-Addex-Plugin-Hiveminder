@@ -1,0 +1,5 @@
+
+This is a plugin for App::Addex to automatically add "todo" addresses to
+contacts.  These addresses will send mail through Hiveminder.com, assigning
+tasks to the contact.  This requires a Hiveminder Pro account.
+
