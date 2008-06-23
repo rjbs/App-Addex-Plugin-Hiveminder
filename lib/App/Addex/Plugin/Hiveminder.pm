@@ -11,11 +11,11 @@ App::Addex::Plugin::Hiveminder - automatically add "to Hiveminder.com" addrs
 
 =head2 VERSION
 
-version 0.001
+version 0.002
 
 =cut
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 =head1 DESCRIPTION
 
@@ -72,6 +72,8 @@ This is useful if your contact uses a specific address only for his
 Hiveminder account, as the recipient of a C<with.hm> request cannot accept the
 request to a different address.
 
+If the entry has a "skip_hiveminder" field, this plugin will leave it alone.
+
 =cut
 
 sub _form_addr {
@@ -90,14 +92,18 @@ sub import {
   my $new_emails = sub {
     my ($self) = @_;
 
-    my @emails = grep { $_->receives } $self->$original_sub;
+    my @emails = $self->$original_sub;
 
-    return @emails if grep { $_->label eq $arg{todo_label} } @emails;
+    return @emails if $self->field('skip_hiveminder');
+
+    return @emails
+      if grep { $_->receives and ($_->label||'') eq $arg{todo_label} } @emails;
 
     my $todo_via = "$arg{todo_label}-via";
-    if (my @indices = grep { $emails[$_]->label eq $todo_via } 0..$#emails) {
+    if (my @indices = grep { ($emails[$_]->label||'') eq $todo_via } 0..$#emails) {
       for (@indices) {
         my $email = $emails[$_];
+        next unless $email->receives;
         splice @emails, $_, 1, App::Addex::Entry::EmailAddress->new({
           address => $mixin->_form_addr($email->address, $arg{secret}),
           label   => $arg{todo_label},
@@ -108,7 +114,7 @@ sub import {
       return @emails;
     }
 
-    my $email = $emails[0];
+    my ($email) = grep { $_->receives } @emails;
 
     # XXX: Totally lifted from AddressBook::Apple.  Put it somewhere more
     # sharey. -- rjbs, 2008-02-17
@@ -123,7 +129,7 @@ sub import {
         }
 
         for my $i (0 .. $#emails) {
-          if ($check->($emails[$i])) {
+          if ($emails[$i]->recieves and $check->($emails[$i])) {
             $email = $emails[$i];
             last CHECK_DEFAULT;
           }
