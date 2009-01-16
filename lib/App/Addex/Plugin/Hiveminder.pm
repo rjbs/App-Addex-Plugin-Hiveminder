@@ -11,11 +11,11 @@ App::Addex::Plugin::Hiveminder - automatically add "to Hiveminder.com" addrs
 
 =head2 VERSION
 
-version 0.003
+version 0.004
 
 =cut
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 =head1 DESCRIPTION
 
