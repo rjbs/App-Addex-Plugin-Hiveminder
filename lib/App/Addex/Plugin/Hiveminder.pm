@@ -5,17 +5,7 @@ package App::Addex::Plugin::Hiveminder;
 use 5.006; # our
 use Sub::Install;
 
-=head1 NAME
-
-App::Addex::Plugin::Hiveminder - automatically add "to Hiveminder.com" addrs
-
-=head2 VERSION
-
-version 0.004
-
-=cut
-
-our $VERSION = '0.004';
+# ABSTRACT: automatically add "to Hiveminder.com" addrs
 
 =head1 DESCRIPTION
 
@@ -144,7 +134,7 @@ sub import {
       label   => $arg{todo_label},
       sends   => 0,
     });
-    
+
     return @emails;
   };
 
@@ -154,24 +144,5 @@ sub import {
     as   => 'emails',
   });
 }
-
-=head1 AUTHOR
-
-Ricardo SIGNES, C<< <rjbs@cpan.org> >>
-
-=head1 BUGS
-
-Please report any bugs or feature requests through the web interface at
-L<http://rt.cpan.org>.  I will be notified, and then you'll automatically be
-notified of progress on your bug as I make changes.
-
-=head1 COPYRIGHT
-
-Copyright 2008 Ricardo Signes, all rights reserved.
-
-This program is free software; you may redistribute it and/or modify it
-under the same terms as Perl itself.
-
-=cut
 
 1;
