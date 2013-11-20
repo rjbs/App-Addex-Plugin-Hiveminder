@@ -9,6 +9,9 @@ use Sub::Install;
 
 =head1 DESCRIPTION
 
+B<Achtung!>  I no longer use Hiveminder, so no longer use this plugin.  If you
+use it, consider adopting it.
+
 Hiveminder (L<http://hiveminder.com>) offers Pro customers the ability to
 assign tasks to anybody with an email address, even if they don't already use
 Hiveminder.  With a Hiveminder Pro account, you get a "secret."  Then, to
